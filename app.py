@@ -15,10 +15,10 @@ else:
 # 2. DEFINIÇÃO DO MODELO (Usando nome estável)
 # Usar 'gemini-1.5-flash' é o caminho mais seguro para evitar o erro NotFound
 model = genai.GenerativeModel(
-    model_name='gemini-1.5-flash',
+    model_name='gemini-1.5-pro',
     system_instruction="""
     Você é o Analista de Logística e Guia de Viagens J&M Orlando.
-    O Administrador Master é Yuri Mendonça (CPF: 04492144609).
+    O Administrador Master é Josi Tavares (CPF: 04492144609).
     Sua tarefa é extrair roteiros estruturados de PDFs/Excel e responder dúvidas de viagem.
     DIRETRIZES: 
     1. Foque em datas, horários e locais.
