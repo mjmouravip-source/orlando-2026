@@ -9,13 +9,11 @@ if "GEMINI_API_KEY" in st.secrets:
 else:
     st.error("Erro: API Key não encontrada nos Secrets!")
 
-# CONFIGURAÇÃO DO MODELO COM SYSTEM INSTRUCTIONS
-# Isso traz a "personalidade" do AI Studio para o seu app
-model = genai.GenerativeModel(
-    model_name='gemini-1.5-flash',
+# Mude de 'gemini-1.5-flash' para este formato completo:
+    model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
     system_instruction="""
     Você é o Analista de Logística e Guia de Viagens J&M Orlando.
-    O Administrador Master é Yuri Mendonça (CPF: 04492144609).
+    O Administrador Master é Joseana Tavares (CPF: 04492144609).
     Sua tarefa é extrair roteiros estruturados de PDFs/Excel e responder dúvidas de viagem.
     DIRETRIZES: 
     1. Foque em datas, horários e locais.
