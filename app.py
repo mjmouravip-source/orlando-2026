@@ -9,7 +9,20 @@ if "GEMINI_API_KEY" in st.secrets:
 else:
     st.error("Erro: API Key não encontrada nos Secrets!")
 
-model = genai.GenerativeModel('gemini-1.5-flash')
+# CONFIGURAÇÃO DO MODELO COM SYSTEM INSTRUCTIONS
+# Isso traz a "personalidade" do AI Studio para o seu app
+model = genai.GenerativeModel(
+    model_name='gemini-1.5-flash',
+    system_instruction="""
+    Você é o Analista de Logística e Guia de Viagens J&M Orlando.
+    O Administrador Master é Yuri Mendonça (CPF: 04492144609).
+    Sua tarefa é extrair roteiros estruturados de PDFs/Excel e responder dúvidas de viagem.
+    DIRETRIZES: 
+    1. Foque em datas, horários e locais.
+    2. Se houver vouchers, confirme códigos de reserva.
+    3. Idioma: Português, mas mantenha nomes originais de parques e atrações.
+    """
+)
 
 st.title("✈️ Mestre de Viagens")
 cpf_input = st.text_input("Digite seu CPF para acessar:", type="password")
@@ -21,41 +34,46 @@ if cpf_input == ADMIN_MASTER:
     
     with st.sidebar:
         st.header("⚙️ Painel de Controle")
-        # Upload de arquivos
         arquivos_carregados = st.file_uploader("Subir roteiros (PDF/Excel)", accept_multiple_files=True)
-        
         st.divider()
-        st.info("Funcionalidades: \n1. Roteiro Dia a Dia\n2. Câmbio e Cultura\n3. Relatório de Memórias")
+        st.info("Logado como: Yuri Mendonça")
 
-    # Inicia histórico de chat
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Mostra mensagens anteriores
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # Entrada do usuário
     if prompt := st.chat_input("Como posso ajudar na sua viagem?"):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
         with st.chat_message("assistant"):
-            # Lógica para incluir os arquivos no processamento
-            conteudo_para_ia = [prompt]
+            # O "Pulo do Gato": Criar a lista de partes corretamente
+            conteudo_para_ia = []
             
+            # 1. Adicionar os arquivos primeiro (se houver)
             if arquivos_carregados:
                 for arq in arquivos_carregados:
-                    # Lê o arquivo e adiciona à lista para o Gemini
-                    bytes_data = arq.read()
-                    conteudo_para_ia.append({"mime_type": arq.type, "data": bytes_data})
+                    bytes_data = arq.getvalue() # getvalue() é mais estável que read() no Streamlit
+                    conteudo_para_ia.append({
+                        "mime_type": arq.type,
+                        "data": bytes_data
+                    })
             
-            # Resposta da IA considerando os arquivos
-            response = model.generate_content(conteudo_para_ia)
-            st.markdown(response.text)
-            st.session_state.messages.append({"role": "assistant", "content": response.text})
+            # 2. Adicionar o texto por último
+            conteudo_para_ia.append(prompt)
+            
+            try:
+                # Gerar resposta
+                response = model.generate_content(conteudo_para_ia)
+                st.markdown(response.text)
+                st.session_state.messages.append({"role": "assistant", "content": response.text})
+            except Exception as e:
+                st.error(f"Erro na IA: {e}")
+                st.info("Dica: Verifique se os arquivos são PDF ou imagens suportadas.")
 
 elif cpf_input != "":
     st.error("CPF não autorizado.")
