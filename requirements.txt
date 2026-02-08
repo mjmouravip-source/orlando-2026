@@ -1,19 +1,2 @@
-# IA e Processamento
-google-generativeai
-langchain-google-genai
-
-# Interface e Web
 streamlit
-streamlit-pills
-streamlit-folium
-
-# Manipulação de Dados e Arquivos
-pandas
-openpyxl
-pypdf2
-pdfplumber
-
-# Clima e Geolocalização
-requests
-geopy
-folium
+google-generativeai
