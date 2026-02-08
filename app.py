@@ -9,7 +9,7 @@ if "GEMINI_API_KEY" in st.secrets:
 else:
     st.error("Erro: API Key não encontrada nos Secrets!")
 
-model = genai.GenerativeModel('gemini-1.5-pro')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 st.title("✈️ Mestre de Viagens")
 cpf_input = st.text_input("Digite seu CPF para acessar:", type="password")
